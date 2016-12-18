@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="hbi.core.mapper.OrderHeadersMapper">
+    <resultMap id="HeadersResult" type="hbi.core.dto.OrderHeaders">
+        <id property="headerId" column="header_id"></id>
+        <result property="orderNumber" column="order_Number"></result>
+        <result property="companyId" column="company_Id"></result>
+        <result property="orderDate" column="order_Date"></result>
+        <result property="orderStatus" column="order_Status"></result>
+        <result property="customerId" column="customer_Id"></result>
+        <result property="orderPrice" column="order_Price"></result>
+        <association property="companys" javaType="hbi.core.dto.Companys">
+            <id property="companyId" column="company_Id"></id>
+            <result property="companyName" column="company_Name"></result>
+        </association>
+        <association property="customers" javaType="hbi.core.dto.Customers">
+            <id property="customerId" column="customer_Id"></id>
+            <result property="customerName" column="customer_Name"></result>
+        </association>
+        <association property="items" javaType="hbi.core.dto.Items">
+            <id property="inventoryItemId" column="inventory_ItemId"></id>
+            <result property="itemCode" column="item_Code"></result>
+            <result property="itemDescription" column="item_Description"></result>
+        </association>
+        <association property="orderLines" javaType="hbi.core.dto.OrderLines">
+            <id property="lineId" column="lineId"></id>
+            <result property="inventoryItemId" column="inventory_ItemId"></result>
+            <result property="orderdQuantity" column="orderd_Quantity"></result>
+            <result property="unitSellingPrice" column="unit_Selling_Price"></result>
+        </association>
+    </resultMap>
+    <select id="getAllOrder" resultMap="HeadersResult" parameterType="hbi.core.dto.HeaderQueryVo">
+        SELECT * ,l.ORDERD_QUANTITY*l.UNIT_SELLING_PRICE as order_price
+        FROM
+        hap_om_order_headers h,
+        hap_ar_customers cu,
+        hap_inv_inventory_items i,
+        hap_om_order_lines l ,
+        hap_org_companys co
+        <where>
+            cu.CUSTOMER_ID=h.CUSTOMER_ID
+            and i.INVENTORY_ITEM_ID=l.INVENTORY_ITEM_ID
+            and h.HEADER_ID=l.HEADER_ID
+            and h.COMPANY_ID=co.COMPANY_ID
+            <if test="companyId!=null">
+                and h.company_Id=#{companyId}
+            </if>
+            <if test="customerId!=null">
+                and h.customer_Id=#{customerId}
+            </if>
+            <if test="orderNumber!=null">
+                and h.order_Number=#{orderNumber}
+            </if>
+            <if test="orderStatus!=null">
+                and h.order_Status=#{orderStatus}
+            </if>
+            <if test="inventoryItemId!=null">
+                and i.inventory_Item_Id=#{inventoryItemId}
+            </if>
+        </where>
+    </select>
+ </mapper>

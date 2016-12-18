@@ -1,0 +1,273 @@
+<#include "include/header.html">
+    <body>
+    <script src="${base.contextPath}/common/code?requestStatusdata=SYS.IF.REQUEST_STATUS"
+            type="text/javascript"></script>
+
+
+    <div class="panel" id="div_form">
+
+        <form class="form-horizontal" id="insertForm" role="form">
+            <div id="update">
+                <div class="form-group" id="view1">
+                    <label class="col-sm-1 control-label">销售订单号</label>
+                    <div class="col-sm-2" >
+                        <input type="text" class="form-control" data-bind="value:model.orderNumber">
+                    </div>
+                    <label class="col-sm-1 control-label">公司名称</label>
+                    <div class="col-sm-2">
+                        <input id="lov_companys" data-bind="value:model.companyId"/>
+                    </div>
+                    <label class="col-sm-1 control-label">客户名称</label>
+                    <div class="col-sm-2">
+                        <input id="lov_customers" data-bind="value:model.customerId"/>
+                    </div>
+                </div>
+
+                <div class="form-group" id="view2">
+                    <label class="col-sm-1 control-label">日期选择器</label>
+                    <div class="col-sm-2">
+                        <input id="startTime" data-bind="value:model.orderDate">
+                        <script>
+                            $("#startTime").kendoDatePicker({
+                                animation: {
+                                    close: {
+                                    },
+                                    open: {
+                                    }
+                                },
+                                format: "{0:yyyy/MM/dd}",
+                                change: function(){
+                                }
+                            });
+                        </script>
+                    </div>
+                    <label class="col-sm-1 control-label">订单总金额</label>
+                    <div class="col-sm-2">
+                        <input   data-value-primitive="true" data-text-field="text" data-value-field="value"
+                                 data-filter= "startswith" data-clear-no-data="true" data-bind="enabled: isEnabled, value:model.orderPrice"  />
+                    </div>
+
+                    <label class="col-sm-1 control-label">订单状态</label>
+                    <div class="col-sm-2">
+                        <input   data-value-primitive="true" data-text-field="text" data-value-field="value"
+                                 data-filter= "startswith" data-clear-no-data="true" data-bind="enabled: isEnabled, value:model.orderStatus"  />
+                    </div>
+
+                </div>
+
+            </div>
+
+            <script>
+                $("#lov_companys").kendoLov({
+                    code: "lov_companys",
+                    contextPath: '${base.contextPath}',
+                    locale: '${base.locale}'
+                });
+                $("#lov_customers").kendoLov({
+                    code: "lov_customers",
+                    contextPath: '${base.contextPath}',
+                    locale: '${base.locale}'
+                });
+                var viewModel1=kendo.observable({
+                    model:{
+                        orderNumber:null,
+                        companyId:null,
+                        customerId:null,
+                        orderDate:null,
+                        orderPrice:null,
+                        orderStatus:"new"
+                    }
+
+                })
+                kendo.bind($("#update"),viewModel1);
+            </script>
+
+           <!-- <script>
+                var viewModel2=kendo.observable({
+
+                       orderDate:null,
+                       orderPrice:null,
+                       orderStatus:"new"
+
+                });
+                kendo.bind($("#view2"),viewModel2);
+            </script>-->
+            <div class="form-group" id="view3">
+
+                <span class="btn btn-info" type="button" data-bind="click:insertFunction"><@spring.message "hap.save"/></span>
+                <span class="btn btn-success" type="button" data-bind="click:"><@spring.message "hap.submit"/></span>
+                <span class="btn btn-success" type="button" data-bind="click:"><@spring.message "审批"/></span>
+                <span class="btn btn-danger" type="button" data-bind="click:"><@spring.message "拒绝"/></span>
+                <span class="btn btn-warning" type="button" data-bind="click:"><@spring.message "整单删除"/></span>
+                <span class="btn btn-warning" type="button" data-bind="click:"><@spring.message "单据打印"/></span>
+                <span class="btn btn-warning" type="button" data-bind="click:"><@spring.message "返回"/></span>
+
+            </div>
+            <script>
+                var viewModel3=kendo.observable({
+                    insertFunction: function(){
+                        var json1=viewModel1.model.toJSON();
+                        console.log(json1);
+                        /*var json2=viewModel2.toJSON();*/
+                        var jsonstr=JSON.stringify(json1);
+
+
+                        console.log(jsonstr);
+                        $.ajax({
+                            type: "POST",
+                            data:jsonstr,
+                            url: "/order/update",
+                            dataType: "json",
+                            contentType:"application/json",
+                            success: function(status){
+
+                            }
+                        });
+
+
+                    }
+                });
+                kendo.bind($("#view3"),viewModel3);
+            </script>
+
+        </form>
+    </div>
+        <script>
+            $("#lov_companys").kendoLov({
+                code: "lov_companys",
+                contextPath: '${base.contextPath}',
+                locale: '${base.locale}'
+            });
+            $("#lov_customers").kendoLov({
+                code: "lov_customers",
+                contextPath: '${base.contextPath}',
+                locale: '${base.locale}'
+            });
+        </script>
+
+
+
+    <div id="tabstrip">
+        <ul>
+            <li class="k-state-active">主要</li>
+            <li>其他</li>
+        </ul>
+        <div>
+            <div id="grid1" style="margin-left:10px">
+                <div id="tool-bar">
+                    <span class="btn btn-primary k-grid-add" data-bind="click:createFunction"><@spring.message "hap.new"/></span>
+                    <span class="btn btn-success k-grid-save-changes"   data-bind="click:saveFunction" ><@spring.message "hap.save"/></span>
+                    <span  class="btn btn-default k-grid-cancel-changes" data-bind="click:cancelFunction"><@spring.message "hap.cancel"/></span>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div id="grid2">
+                <span class="btn btn-primary k-grid-add" data-bind="click:createFunction"><@spring.message "hap.new"/></span>
+                <span class="btn btn-success k-grid-save-changes"   data-bind="click:saveFunction" ><@spring.message "hap.save"/></span>
+                <span  class="btn btn-default k-grid-cancel-changes" data-bind="click:cancelFunction"><@spring.message "hap.cancel"/></span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var dataSource = new kendo.data.DataSource({
+            transport: {
+                read: { //从url路径请求数据  也就是查询数据
+                    url: "/line/query",
+                    dataType: "json"
+                },create:{
+                    url: "/line/update",
+                    dataType:"json"
+                }
+            }, schema: {
+                model: {
+
+                    id: "lineNumber",
+                    fields:{
+                        itemName:{
+                            type: 'string'
+                        },ownerId:{
+                            type: 'int'
+                        }
+                    }
+                }
+            },
+            batch:true,
+            pageSize: 10 //每一页10条数据
+        });
+
+        $("#grid1").kendoGrid({
+            columns: [
+                { title: "行号"},
+                { title:"物料编码"},
+                {  title:"物料描述"},
+                { title:"产品单位"},
+                {title:"数量"},
+                {title:"销售单价"},
+                {title:"金额"},
+                {title:"备注"}
+            ],
+           /* columns: [
+                { field:"orderLines.lineNumber", title: "行号"},
+                { field:"items.itemCode",title:"物料编码"},
+                {  field:"items.itemDescription",title:"物料描述"},
+                { field:"orderLines.orderQuantityUom",title:"产品单位"},
+                {field:"orderLines.orderdQuantity",title:"数量"},
+                {field:"orderLines.unitSellingPrice",title:"销售单价"},
+                {field:"orderPrice",title:"金额"},
+                {field:"orderLines.description",title:"备注"}
+            ],*/
+            dataSource: dataSource,
+            pageable: true, //是否分页
+            pageSize    : 10,//初始是一页多少条数据
+            pageable: {
+                pageSizes:[5, 10, 20],//每页可以有多少数据
+                refresh:true,//是否可以刷新
+                buttonCount:5 //超过几页以上出现折叠
+            }
+        });
+       /* $("#grid2").kendoGrid({
+            columns: [
+                { field:"orderLines.addition1", title: "附件信息1"},
+                { field:"orderLines.addition2",title:"附件信息2"},
+                {  field:"orderLines.addition3",title:"附件信息3"},
+                { field:"orderLines.addition4",title:"附件信息4"},
+                {field:"orderLines.addition5",title:"附件信息5"}
+
+            ],
+            dataSource: dataSource,
+            pageable: true, //是否分页
+            pageSize    : 10,//初始是一页多少条数据
+            pageable: {
+                pageSizes:[5, 10, 20],//每页可以有多少数据
+                refresh:true,//是否可以刷新
+                buttonCount:5 //超过几页以上出现折叠
+            }
+        });
+*/
+        var viewModel=kendo.observable({
+
+            createFunction: function(){
+                $('#grid1').data('kendoGrid').addRow();
+            },
+            saveFunction: function(){
+                $('#grid1').data('kendoGrid').saveChanges();
+            },
+            cancelFunction: function(e){
+                $('#grid1').data('kendoGrid').cancelChanges();
+            }
+        })
+           /* kendo.bind("$(#insert)",viewModel);*/
+            kendo.bind($("#grid1"),viewModel);
+
+        $(document).ready(function() {
+            $("#tabstrip").kendoTabStrip();
+        });
+
+    </script>
+
+
+
+    </body>
+    </html>
